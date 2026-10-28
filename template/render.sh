@@ -7,7 +7,10 @@ HERE="$(cd "$(dirname "$0")" && pwd)"; T="$HERE/tools"
 CITY="$(cd "$1" && pwd)"; shift
 if [ "$1" = "--draft" ]; then export CS_SCALE=${CS_SCALE:-0.5} CS_FPS=${CS_FPS:-15}; SUF="-draft"; else export CS_SCALE=${CS_SCALE:-1} CS_FPS=${CS_FPS:-30}; SUF=""; fi
 SLUG=$(python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['slug'])" "$CITY/city.json")
-exec 9>"$CITY/build.lock"; flock 9
+# advisory lock when available (Linux); skip on Windows/Git Bash without flock
+if command -v flock >/dev/null 2>&1; then
+  exec 9>"$CITY/build.lock"; flock 9
+fi
 python3 -I "$T/build_timeline.py" "$CITY"
 python3 "$T/music.py" "$CITY"
 python3 -I "$T/make_docs.py" "$CITY"

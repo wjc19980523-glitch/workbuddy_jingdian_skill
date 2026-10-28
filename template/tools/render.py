@@ -7,12 +7,36 @@ usage: python3 -I render.py <cityDir> [--scale 1] [--fps 30] [--workers N] [--sh
 * Motion blur: for every frame the page reports how far anything moves on screen across the open shutter
   (window.__motion); fast frames are captured several times inside the shutter and averaged in linear light.
   A frame whose shutter straddles a hard cut is captured once.
-* Chrome: $CHROME or /usr/bin/google-chrome.
+* Chrome: $CHROME, else common OS paths, else Playwright bundled Chromium.
 """
 import argparse, asyncio, io, json, math, os, sys, time
 from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from PIL import Image
+
+
+def resolve_chrome():
+    """Prefer $CHROME; else common OS paths; else None → Playwright bundled Chromium."""
+    env = os.environ.get('CHROME')
+    if env and os.path.isfile(env):
+        return env
+    candidates = [
+        '/usr/bin/google-chrome',
+        '/usr/bin/google-chrome-stable',
+        '/usr/bin/chromium',
+        '/usr/bin/chromium-browser',
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        r'C:\Program Files\Google\Chrome\Application\chrome.exe',
+        r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+        os.path.expandvars(r'%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe'),
+        os.path.expandvars(r'%PROGRAMFILES%\Google\Chrome\Application\chrome.exe'),
+        os.path.expandvars(r'%PROGRAMFILES(X86)%\Google\Chrome\Application\chrome.exe'),
+    ]
+    for c in candidates:
+        if c and os.path.isfile(c):
+            return c
+    return None
+
 
 ap = argparse.ArgumentParser()
 ap.add_argument('city'); ap.add_argument('--scale', type=float, default=float(os.environ.get('CS_SCALE', 1)))
@@ -24,7 +48,7 @@ ap.add_argument('--from', dest='f0', type=int, default=0); ap.add_argument('--to
 A = ap.parse_args()
 CITY = os.path.abspath(A.city)
 B = os.path.join(CITY, 'build'); FR = os.path.join(B, 'frames'); os.makedirs(FR, exist_ok=True)
-CHROME = os.environ.get('CHROME', '/usr/bin/google-chrome')
+CHROME = resolve_chrome()
 _u = np.arange(256) / 255.0
 S2L = np.where(_u <= 0.04045, _u / 12.92, ((_u + 0.055) / 1.055) ** 2.4).astype(np.float32)
 
@@ -37,8 +61,11 @@ def l2s(x):
 async def worker_main(wid, frames, fps, scale, shutter, gap, maxs):
     from playwright.async_api import async_playwright
     async with async_playwright() as pw:
-        br = await pw.chromium.launch(executable_path=CHROME, args=['--disable-gpu', '--force-color-profile=srgb', '--hide-scrollbars',
-                                                                     '--disable-web-security', '--allow-file-access-from-files'])
+        launch_kwargs = dict(args=['--disable-gpu', '--force-color-profile=srgb', '--hide-scrollbars',
+                                   '--disable-web-security', '--allow-file-access-from-files'])
+        if CHROME:
+            launch_kwargs['executable_path'] = CHROME
+        br = await pw.chromium.launch(**launch_kwargs)
         pg = await br.new_page(viewport={'width': 1080, 'height': 1920}, device_scale_factor=scale)
         await pg.goto('file://' + os.path.join(B, 'index.html'))
         await pg.evaluate('window.__ready')

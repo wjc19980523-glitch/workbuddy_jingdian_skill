@@ -7,6 +7,9 @@ description: 城市景点竖屏短视频：只给一个城市名（如“杭州�
 
 **一句话**：`./run.sh <城市名>`，按它打印的“下一步”做，反复运行同一条命令，直到最后一行是 `RUN.SH EXIT 0`。
 
+> **Windows / WorkBuddy 首次跑**：脚本原在 Linux 上验收。第一次会装 `numpy/scipy/Pillow/playwright`（网络不稳就换国内镜像），`flock` 已可选；Chrome 会自动找本机路径，找不到就用 Playwright 自带 Chromium。装好依赖后直接重跑 `./run.sh <城市> --draft`。
+
+
 - 你（执行模型）**只写数据**：`examples/<slug>/spots.json`。**不写代码、不改 `template/`、不写经纬度、不写图片网址。**
 - 所有命令都在本 skill 根目录（`run.sh` 所在目录）执行。
 - 画面、运镜、转场、配乐都是模板自动决定的（每个景点自动分到不同运镜），你不用管。

@@ -10,12 +10,37 @@ B = os.path.join(CITY, 'build')
 dur = json.load(open(os.path.join(B, 'events.json')))['dur']
 ts = [float(x) for x in sys.argv[3].split(',')] if len(sys.argv) > 3 else [k + 0.5 for k in range(int(dur))]
 
+def resolve_chrome():
+    """Prefer $CHROME; else common OS paths; else None → Playwright bundled Chromium."""
+    env = os.environ.get('CHROME')
+    if env and os.path.isfile(env):
+        return env
+    candidates = [
+        '/usr/bin/google-chrome',
+        '/usr/bin/google-chrome-stable',
+        '/usr/bin/chromium',
+        '/usr/bin/chromium-browser',
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        r'C:\Program Files\Google\Chrome\Application\chrome.exe',
+        r'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
+        os.path.expandvars(r'%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe'),
+        os.path.expandvars(r'%PROGRAMFILES%\Google\Chrome\Application\chrome.exe'),
+        os.path.expandvars(r'%PROGRAMFILES(X86)%\Google\Chrome\Application\chrome.exe'),
+    ]
+    for c in candidates:
+        if c and os.path.isfile(c):
+            return c
+    return None
+
 
 async def main():
     from playwright.async_api import async_playwright
     async with async_playwright() as pw:
-        br = await pw.chromium.launch(executable_path=os.environ.get('CHROME', '/usr/bin/google-chrome'),
-                                      args=['--disable-gpu', '--allow-file-access-from-files', '--hide-scrollbars'])
+        chrome = resolve_chrome()
+        launch_kwargs = dict(args=['--disable-gpu', '--allow-file-access-from-files', '--hide-scrollbars'])
+        if chrome:
+            launch_kwargs['executable_path'] = chrome
+        br = await pw.chromium.launch(**launch_kwargs)
         pg = await br.new_page(viewport={'width': 1080, 'height': 1920}, device_scale_factor=0.25)
         logs = []
         pg.on('console', lambda m: logs.append(m.text)); pg.on('pageerror', lambda e: logs.append('PAGEERROR ' + str(e)))
