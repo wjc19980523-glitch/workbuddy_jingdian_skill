@@ -13,13 +13,13 @@ import json, os, subprocess, sys, time, urllib.parse
 
 UA = 'CityScenicBot/1.0 (documentary research)'
 CITY = os.path.abspath(sys.argv[1])
-city = json.load(open(os.path.join(CITY, 'city.json')))
+city = json.load(open(os.path.join(CITY, 'city.json'), encoding='utf-8'))
 NP = os.path.join(CITY, 'spots.json')
-data = json.load(open(NP))
+data = json.load(open(NP, encoding='utf-8'))
 bb = city.get('adminBBox') or [city['center']['lon'] - .8, city['center']['lat'] - .8, city['center']['lon'] + .8, city['center']['lat'] + .8]
 pad = 0.15
 inside = lambda lon, lat: bb[0] - pad <= lon <= bb[2] + pad and bb[1] - pad <= lat <= bb[3] + pad
-log = open(os.path.join(CITY, 'research', 'geocode.log'), 'a')
+log = open(os.path.join(CITY, 'research', 'geocode.log'), 'a', encoding='utf-8')
 
 
 def get(url):
@@ -68,7 +68,7 @@ for i, n in enumerate(data['spots']):
     n['lon'], n['lat'], n['geoSource'], n['geoQuery'] = round(hit[0], 4), round(hit[1], 4), hit[2], q
     print(f"{n.get('id')} {q} -> {n['lon']}, {n['lat']}  ({hit[2]})")
     log.write(f"{n.get('id')}\t{q}\t{n['lon']}\t{n['lat']}\t{hit[2]}\n")
-json.dump(data, open(NP, 'w'), ensure_ascii=False, indent=1)
+json.dump(data, open(NP, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 if bad:
     print('\n'.join(['GEOCODE 失败：'] + bad))
     sys.exit(1)

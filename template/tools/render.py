@@ -108,14 +108,14 @@ def run(args):
 
 
 def main():
-    tl = json.load(open(os.path.join(B, 'events.json')))
+    tl = json.load(open(os.path.join(B, 'events.json'), encoding='utf-8'))
     total = int(round(tl['dur'] * A.fps))
     stamp = os.path.join(FR, '.params'); params = f'{A.scale} {A.fps}'
-    if os.path.exists(stamp) and open(stamp).read().strip() != params:
+    if os.path.exists(stamp) and open(stamp, encoding='utf-8').read().strip() != params:
         for fn in os.listdir(FR):
             if fn.endswith('.jpg'):
                 os.remove(os.path.join(FR, fn))
-    open(stamp, 'w').write(params)
+    open(stamp, 'w', encoding='utf-8').write(params)
     f1 = total if A.f1 < 0 else min(total, A.f1)
     todo = [f for f in range(A.f0, f1) if not os.path.exists(os.path.join(FR, f'f{f:05d}.jpg'))]
     print(f'render {total} frames total, {len(todo)} to do, {A.workers} workers, scale {A.scale}, {A.fps} fps', flush=True)

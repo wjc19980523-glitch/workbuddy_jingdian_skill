@@ -6,19 +6,19 @@ import json, os, re, sys
 
 CITY = os.path.abspath(sys.argv[1])
 R = os.path.join(CITY, 'research')
-d = json.load(open(os.path.join(CITY, 'spots.json')))
-ver = json.load(open(os.path.join(R, 'verify.json')))
-meta = json.load(open(os.path.join(CITY, 'assets', 'img', 'meta.json')))
-rej = json.load(open(os.path.join(CITY, 'assets', 'img', 'rejected.json'))) if os.path.exists(os.path.join(CITY, 'assets', 'img', 'rejected.json')) else []
-city = json.load(open(os.path.join(CITY, 'city.json')))
-tl = json.load(open(os.path.join(CITY, 'build', 'events.json'))) if os.path.exists(os.path.join(CITY, 'build', 'events.json')) else None
+d = json.load(open(os.path.join(CITY, 'spots.json'), encoding='utf-8'))
+ver = json.load(open(os.path.join(R, 'verify.json'), encoding='utf-8'))
+meta = json.load(open(os.path.join(CITY, 'assets', 'img', 'meta.json'), encoding='utf-8'))
+rej = json.load(open(os.path.join(CITY, 'assets', 'img', 'rejected.json'), encoding='utf-8')) if os.path.exists(os.path.join(CITY, 'assets', 'img', 'rejected.json')) else []
+city = json.load(open(os.path.join(CITY, 'city.json'), encoding='utf-8'))
+tl = json.load(open(os.path.join(CITY, 'build', 'events.json'), encoding='utf-8')) if os.path.exists(os.path.join(CITY, 'build', 'events.json')) else None
 
 
 def url_of(fn):
     p = os.path.join(R, fn)
     if not os.path.exists(p):
         return ''
-    for line in open(p, errors='ignore').read(600).splitlines():
+    for line in open(p, errors='ignore', encoding='utf-8').read(600).splitlines():
         if line.startswith('# http'):
             return line[2:].strip()
     return ''
@@ -50,7 +50,7 @@ for i, s in enumerate(d['spots'], 1):
             review.append(f"{s['name']}：{f['text']}（{f['status']}）")
     S.append('')
 S += [f"## 结尾提问", '', d['question'].replace('\\n', '').replace('\n', ''), '']
-open(os.path.join(CITY, 'sources.md'), 'w').write('\n'.join(S))
+open(os.path.join(CITY, 'sources.md'), 'w', encoding='utf-8').write('\n'.join(S))
 
 I = [f"# {d['city']} · 景点视频 图片与素材授权清单", '',
      '全部实景照片来自 Wikimedia Commons，授权只限公有领域 / CC0 / CC BY / CC BY-SA（脚本按 Commons 文件页元数据过滤，并排除 Commons 分类或说明里标为 AI 生成的文件）。',
@@ -73,7 +73,7 @@ I += ['', '## 地图底图', '']
 for nm in ('local', 'wide'):
     p = os.path.join(CITY, 'assets', 'map', nm + '.json')
     if os.path.exists(p):
-        m = json.load(open(p))
+        m = json.load(open(p, encoding='utf-8'))
         I.append(f"- assets/map/{nm}.jpg：NASA GIBS WMS，图层 {m.get('layer')}，日期 {', '.join(m.get('dates', []))}。"
                  '<https://gibs.earthdata.nasa.gov/> NASA EOSDIS 影像无使用限制，要求注明出处（HLS 含修改后的 Copernicus Sentinel-2 数据）；画面上已注明。')
 I += ['', '## 配乐与音效', '',
@@ -84,13 +84,13 @@ I += ['', '## 配乐与音效', '',
        '片尾字幕注明“本片由 AI 辅助剪辑；画面均为实拍授权照片与卫星影像，无 AI 生成画面”。'), '']
 if rej:
     I += ['## 被拒收的图', ''] + [f"- {r.get('file')}（{r.get('node')}）：{r.get('why')}" for r in rej] + ['']
-open(os.path.join(CITY, 'image-sources.md'), 'w').write('\n'.join(I))
+open(os.path.join(CITY, 'image-sources.md'), 'w', encoding='utf-8').write('\n'.join(I))
 
 V = [f"# {d['city']} · 待人工核对", '']
 V += [f"- {x}" for x in review if x] or ['- （无：所有上屏事实都有两个网站的原文支持）']
 V += ['', '另请过目：地名小字（where）与图注（caption）由执行模型根据资料/候选说明填写，脚本只查长度和禁用词，未逐字核对。', '']
 notes = os.path.join(CITY, 'REVIEW.notes.md')
 if os.path.exists(notes):
-    V += ['## 人工审校备注', '', open(notes).read()]
-open(os.path.join(CITY, 'REVIEW.md'), 'w').write('\n'.join(V))
+    V += ['## 人工审校备注', '', open(notes, encoding='utf-8').read()]
+open(os.path.join(CITY, 'REVIEW.md'), 'w', encoding='utf-8').write('\n'.join(V))
 print('docs ok: sources.md image-sources.md REVIEW.md', len([x for x in review if x]), 'to review')

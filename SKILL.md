@@ -7,7 +7,9 @@ description: 城市景点竖屏短视频：只给一个城市名（如“杭州�
 
 **一句话**：`./run.sh <城市名>`，按它打印的“下一步”做，反复运行同一条命令，直到最后一行是 `RUN.SH EXIT 0`。
 
-> **Windows / WorkBuddy 首次跑**：脚本原在 Linux 上验收。第一次会装 `numpy/scipy/Pillow/playwright`（网络不稳就换国内镜像），`flock` 已可选；Chrome 会自动找本机路径，找不到就用 Playwright 自带 Chromium。装好依赖后直接重跑 `./run.sh <城市> --draft`。
+> **Windows / WorkBuddy**：请用本仓库最新 commit（含 `-X utf8`、Commons 429 重试）。脚本原在 Linux 上验收。第一次会装 `numpy/scipy/Pillow/playwright`（网络不稳就换国内镜像），`flock` 已可选；Chrome 会自动找本机路径，找不到就用 Playwright 自带 Chromium。装好依赖后直接重跑 `./run.sh <城市> --draft`。
+>
+> **中文 Windows 编码 / Commons 429**：`run.sh` 已用 `python3 -I -X utf8`（`-I` 会忽略 `PYTHONUTF8`，必须靠 `-X utf8`），读写 JSON/文本都带 `encoding='utf-8'`，避免默认 GBK 崩溃。Wikimedia 下载遇 429/5xx 会指数退避重试；若中途仍因限流或缺图失败（例如渲染报 Page not initialized / 缺 assets），直接再跑同一条 `./run.sh <城市> --draft` 即可（已下好的图和帧会复用）。
 
 
 - 你（执行模型）**只写数据**：`examples/<slug>/spots.json`。**不写代码、不改 `template/`、不写经纬度、不写图片网址。**
@@ -40,8 +42,8 @@ description: 城市景点竖屏短视频：只给一个城市名（如“杭州�
 ### 2.2 每个景点下载两份资料（两个不同网站）
 
 ```bash
-python3 -I template/tools/wiki.py wp examples/<slug>/research 灵隐寺 西湖 雷峰塔      # 维基百科条目（可多个）
-python3 -I template/tools/wiki.py bk examples/<slug>/research 灵隐寺 西湖 雷峰塔      # 快懂百科词条
+python3 -I -X utf8 template/tools/wiki.py wp examples/<slug>/research 灵隐寺 西湖 雷峰塔      # 维基百科条目（可多个）
+python3 -I -X utf8 template/tools/wiki.py bk examples/<slug>/research 灵隐寺 西湖 雷峰塔      # 快懂百科词条
 ```
 
 输出 `ok ...` 才算成功；`FAILED` 的换个条目名再试（如加“景区”“古镇”，或用全称）。下载的文件名见输出（`wp_灵隐寺.txt`、`bk_灵隐寺.txt`）。
@@ -121,7 +123,7 @@ python3 -I template/tools/wiki.py bk examples/<slug>/research 灵隐寺 西湖 �
 | 查不到坐标 | `geo` 换成维基条目名，或“城市名+景点名”，或附近更有名的地标 |
 | question 问号 / 数字不一致 | 全句只能一个问号且在最后；数字 = 景点数 |
 | 禁用词 | 删掉：粉丝、关注、点赞、下期、账号、主页、私信、加群…… |
-| 退出码 2（网络） | 直接重跑，已下载的会复用 |
+| 退出码 2（网络 / Commons 429） | 直接重跑同一条命令，已下载的图/帧会复用 |
 
 ---
 

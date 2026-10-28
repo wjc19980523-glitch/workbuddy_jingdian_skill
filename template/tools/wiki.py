@@ -38,7 +38,7 @@ if mode == 'wp':
         if not p.get('extract'):
             print('FAILED wp', t); continue
         url = 'https://zh.wikipedia.org/wiki/' + urllib.parse.quote(p['title'])
-        open(os.path.join(out, 'wp_' + safe(t) + '.txt'), 'w').write(f"# zh.wikipedia: {p['title']}\n# {url}\n# coords {p.get('coordinates')}\n\n{p['extract']}")
+        open(os.path.join(out, 'wp_' + safe(t) + '.txt'), 'w', encoding='utf-8').write(f"# zh.wikipedia: {p['title']}\n# {url}\n# coords {p.get('coordinates')}\n\n{p['extract']}")
         print('ok wp', t, '->', p['title'], len(p['extract']), p.get('coordinates')); time.sleep(1)
 elif mode == 'ws':
     for t in sys.argv[3:]:
@@ -51,7 +51,7 @@ elif mode == 'ws':
         if not txt:
             print('FAILED ws', t); continue
         url = 'https://zh.wikisource.org/wiki/' + urllib.parse.quote(t)
-        open(os.path.join(out, 'ws_' + safe(t) + '.txt'), 'w').write(f'# zh.wikisource: {t}\n# {url}\n\n{txt}')
+        open(os.path.join(out, 'ws_' + safe(t) + '.txt'), 'w', encoding='utf-8').write(f'# zh.wikisource: {t}\n# {url}\n\n{txt}')
         print('ok ws', t, len(txt)); time.sleep(1)
 elif mode == 'index':
     pass
@@ -70,14 +70,14 @@ else:
         if len(s) < 150:
             print('FAILED', mode, url, '(page missing or empty)'); continue
         s = re.sub(r'\n(?=[^\n]{0,12}\n)', '', s)   # re-join words split by inline tags
-        open(os.path.join(out, name + '.txt'), 'w').write(f'# {url}\n\n{s}')
+        open(os.path.join(out, name + '.txt'), 'w', encoding='utf-8').write(f'# {url}\n\n{s}')
         print('ok', mode, name, len(s)); time.sleep(1)
 
 # keep research/INDEX.md in sync (file → source URL)
-with open(os.path.join(out, 'INDEX.md'), 'w') as f:
+with open(os.path.join(out, 'INDEX.md'), 'w', encoding='utf-8') as f:
     f.write('# research/ 文件索引（文件第二行是来源网址）\n\n')
     for fn in sorted(os.listdir(out)):
         if fn.endswith('.txt'):
-            head = open(os.path.join(out, fn), errors='ignore').read(400).splitlines()
+            head = open(os.path.join(out, fn), errors='ignore', encoding='utf-8').read(400).splitlines()
             url = next((h[2:] for h in head if h.startswith('# http')), '')
             f.write(f'- {fn}  {url}\n')

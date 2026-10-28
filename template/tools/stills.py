@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 
 CITY = os.path.abspath(sys.argv[1]); OUT = sys.argv[2]
 B = os.path.join(CITY, 'build')
-dur = json.load(open(os.path.join(B, 'events.json')))['dur']
+dur = json.load(open(os.path.join(B, 'events.json'), encoding='utf-8'))['dur']
 ts = [float(x) for x in sys.argv[3].split(',')] if len(sys.argv) > 3 else [k + 0.5 for k in range(int(dur))]
 
 def resolve_chrome():

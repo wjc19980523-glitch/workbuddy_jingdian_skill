@@ -14,7 +14,7 @@ STAGE = sys.argv[sys.argv.index('--stage') + 1] if '--stage' in sys.argv else 't
 R = os.path.join(CITY, 'research')
 errs, warns = [], []
 try:
-    d = json.load(open(os.path.join(CITY, 'spots.json')))
+    d = json.load(open(os.path.join(CITY, 'spots.json'), encoding='utf-8'))
 except Exception as e:
     print(f'ERROR spots.json 不是合法 JSON：{e}'); sys.exit(1)
 
@@ -34,7 +34,7 @@ _cache = {}
 def text_of(fn):
     if fn not in _cache:
         p = os.path.join(R, fn)
-        _cache[fn] = norm(open(p, errors='ignore').read()) if os.path.exists(p) and os.path.isfile(p) else None
+        _cache[fn] = norm(open(p, errors='ignore', encoding='utf-8').read()) if os.path.exists(p) and os.path.isfile(p) else None
     return _cache[fn]
 
 
@@ -100,7 +100,7 @@ for n_ in re.findall(r'\d+', q):
 cand = {}
 cp = os.path.join(R, 'image_candidates.json')
 if os.path.exists(cp):
-    cand = {x['code']: x for v in json.load(open(cp)).values() for x in v['items']}
+    cand = {x['code']: x for v in json.load(open(cp, encoding='utf-8')).values() for x in v['items']}
 ids = set()
 for i, s in enumerate(spots, 1):
     w = f"景点 {i}（{s.get('id', '?')} {s.get('name', '')}）"
@@ -148,7 +148,7 @@ for i, s in enumerate(spots, 1):
         if not ims:
             warns.append(f'{w}：没有图片，会做成地图文字卡')
 
-json.dump(verify, open(os.path.join(R, 'verify.json'), 'w'), ensure_ascii=False, indent=1)
+json.dump(verify, open(os.path.join(R, 'verify.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 for x in warns:
     print('WARN', x)
 for v in verify.values():

@@ -15,7 +15,7 @@ Images supplied by the user instead ("ai": true marks an AI-generated picture â†
 Rejected images are removed from spots.json and listed in assets/img/rejected.json; a node left without images
 gets a text card.
 """
-import json, os, re, shutil, subprocess, sys
+import json, os, re, shutil, sys, time
 from PIL import Image, ImageOps, ImageEnhance
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -69,12 +69,12 @@ def main():
     IMG = os.path.join(CITY, 'assets', 'img'); RAW = os.path.join(CITY, 'build', 'imgraw')
     os.makedirs(IMG, exist_ok=True); os.makedirs(RAW, exist_ok=True)
     NP = os.path.join(CITY, 'spots.json')
-    data = json.load(open(NP))
+    data = json.load(open(NP, encoding='utf-8'))
     cp = os.path.join(CITY, 'research', 'image_candidates.json')
-    cand = json.load(open(cp)) if os.path.exists(cp) else {}
+    cand = json.load(open(cp, encoding='utf-8')) if os.path.exists(cp) else {}
 
     meta_p = os.path.join(IMG, 'meta.json')
-    meta = json.load(open(meta_p)) if os.path.exists(meta_p) else {}
+    meta = json.load(open(meta_p, encoding='utf-8')) if os.path.exists(meta_p) else {}
     rejected = []
     for n in data['spots']:
         keep = []
@@ -111,7 +111,8 @@ def main():
             ext = os.path.splitext(url.split('?')[0])[1].lower() or '.jpg'
             raw = os.path.join(RAW, iid + ext)
             if not (os.path.exists(raw) and os.path.getsize(raw) > 1000 and meta.get(iid, {}).get('title') == spec['commons']):
-                subprocess.check_call(['curl', '-s', '-f', '-L', '-m', '180', '-A', commons.UA, '-o', raw, url])
+                commons.download(url, raw)
+                time.sleep(1.5)  # ease Commons 429 rate limits
             size = norm(raw, os.path.join(IMG, iid + '.jpg'), spec.get('crop'))
             x.update(id=iid, node=n['id'], raw=os.path.relpath(raw, CITY), fetched=url, categories=cats[:30],
                      crop=spec.get('crop'), pdfpage=spec.get('page'), size=size)
@@ -122,9 +123,9 @@ def main():
             print('ok', iid, x['license'], (x['artist'] or '')[:30], size, flush=True)
         if 'images' in n:
             n['images'] = keep
-    json.dump(meta, open(meta_p, 'w'), ensure_ascii=False, indent=1)
-    json.dump(rejected, open(os.path.join(IMG, 'rejected.json'), 'w'), ensure_ascii=False, indent=1)
-    json.dump(data, open(NP, 'w'), ensure_ascii=False, indent=1)
+    json.dump(meta, open(meta_p, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    json.dump(rejected, open(os.path.join(IMG, 'rejected.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    json.dump(data, open(NP, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print('images', len(meta), 'rejected', len(rejected))
 
 

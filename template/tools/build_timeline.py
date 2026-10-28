@@ -16,8 +16,8 @@ import itertools, json, math, os, shutil, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 CITY = os.path.abspath(sys.argv[1])
 B = os.path.join(CITY, 'build'); os.makedirs(B, exist_ok=True)
-data = json.load(open(os.path.join(CITY, 'spots.json')))
-city = json.load(open(os.path.join(CITY, 'city.json')))
+data = json.load(open(os.path.join(CITY, 'spots.json'), encoding='utf-8'))
+city = json.load(open(os.path.join(CITY, 'city.json'), encoding='utf-8'))
 mp = os.path.join(CITY, 'assets', 'map')
 FPS = int(os.environ.get('CS_FPS', '30'))
 BPM = 120
@@ -74,7 +74,7 @@ def assign(spots):
     return [out[i] for i in range(len(spots))]
 
 
-meta = json.load(open(os.path.join(CITY, 'assets', 'img', 'meta.json'))) if os.path.exists(os.path.join(CITY, 'assets', 'img', 'meta.json')) else {}
+meta = json.load(open(os.path.join(CITY, 'assets', 'img', 'meta.json'), encoding='utf-8')) if os.path.exists(os.path.join(CITY, 'assets', 'img', 'meta.json')) else {}
 spots = []
 for k, s in enumerate(data['spots']):
     ims = []
@@ -161,7 +161,7 @@ maps = {}
 for nmp in ('local', 'wide'):
     f = os.path.join(mp, nmp + '.json')
     if os.path.exists(f):
-        m = json.load(open(f)); m['src'] = '../assets/map/' + nmp + '.jpg'; maps[nmp] = m
+        m = json.load(open(f, encoding='utf-8')); m['src'] = '../assets/map/' + nmp + '.jpg'; maps[nmp] = m
 city_name = data['city']
 TLd = dict(W=1080, H=1920, fps=FPS, bpm=BPM, dur=dur, city=city_name, hook='飞越' + city_name, hookCut=hook_cut,
            subtitle=data['subtitle'], question=data['question'].replace('\\n', '\n'), mapCredit=city.get('mapCredit', '卫星影像：NASA GIBS'),
@@ -169,8 +169,8 @@ TLd = dict(W=1080, H=1920, fps=FPS, bpm=BPM, dur=dur, city=city_name, hook='飞�
 txt = ''.join([TLd['hook'], city_name, TLd['subtitle'], TLd['question'], TLd['mapCredit'], '下一站', '资料：', '｜', '/0123456789', ''.join(credits)]
               + [s['name'] + s['where'] + ''.join(s['facts']) + s['src'] + ''.join(im['caption'] + im['credit'] for im in s['images']) for s in spots])
 TLd['allText'] = ''.join(sorted(set(txt)))
-open(os.path.join(B, 'timeline.js'), 'w').write('window.TL = ' + json.dumps(TLd, ensure_ascii=False, indent=1) + ';\n')
-json.dump(dict(dur=dur, bpm=BPM, events=ev, shots=shots), open(os.path.join(B, 'events.json'), 'w'), ensure_ascii=False, indent=1)
+open(os.path.join(B, 'timeline.js'), 'w', encoding='utf-8').write('window.TL = ' + json.dumps(TLd, ensure_ascii=False, indent=1) + ';\n')
+json.dump(dict(dur=dur, bpm=BPM, events=ev, shots=shots), open(os.path.join(B, 'events.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 for f in ('index.html', 'app.js'):
     shutil.copy(os.path.join(HERE, '..', 'src', f), os.path.join(B, f))
 print(f'timeline {dur:.1f}s · {len(shots)} shots · ' + ' '.join(f"{s['name']}:{r}" for s, r in zip(spots, recipes)) + (f' · hop before {spots[hop_before]["name"]}' if hop_before else ''))

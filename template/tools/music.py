@@ -14,7 +14,7 @@ from scipy.signal import fftconvolve, butter, sosfilt
 
 CITY = os.path.abspath(sys.argv[1])
 B = os.path.join(CITY, 'build')
-tl = json.load(open(os.path.join(B, 'events.json')))
+tl = json.load(open(os.path.join(B, 'events.json'), encoding='utf-8'))
 SR = 48000
 DUR = tl['dur'] + 0.6
 N = int(DUR * SR)

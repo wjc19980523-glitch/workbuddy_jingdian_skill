@@ -20,8 +20,8 @@ M = os.path.join(CITY, 'assets', 'map'); TMP = os.path.join(CITY, 'build', 'mapd
 os.makedirs(M, exist_ok=True); os.makedirs(TMP, exist_ok=True)
 UA = 'CityScenicBot/1.0 (travel film; open data)'
 R = 6378137.0
-spots = json.load(open(os.path.join(CITY, 'spots.json')))['spots']
-city = json.load(open(os.path.join(CITY, 'city.json')))
+spots = json.load(open(os.path.join(CITY, 'spots.json'), encoding='utf-8'))['spots']
+city = json.load(open(os.path.join(CITY, 'city.json'), encoding='utf-8'))
 WMS = 'https://gibs.earthdata.nasa.gov/wms/{crs}/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0'
 HLS = {'S30': 'HLS_S30_Nadir_BRDF_Adjusted_Reflectance', 'L30': 'HLS_L30_Nadir_BRDF_Adjusted_Reflectance'}
 WIDE_LAYERS = ['VIIRS_NOAA20_CorrectedReflectance_TrueColor', 'VIIRS_SNPP_CorrectedReflectance_TrueColor', 'MODIS_Aqua_CorrectedReflectance_TrueColor']
@@ -108,7 +108,7 @@ def mosaic(name, bbox, W, picks, tile=2048):
     lon0, lat0 = inv(x0, y0); lon1, lat1 = inv(x0 + W * mpp, y0 + H * mpp)
     Image.fromarray((a * 255).astype(np.uint8)).save(os.path.join(M, name + '.jpg'), quality=90)
     meta = dict(w=W, h=H, lon0=lon0, lon1=lon1, lat0=lat0, lat1=lat1, dates=used, layer=picks[0]['layer'])
-    json.dump(meta, open(os.path.join(M, name + '.json'), 'w'), indent=1)
+    json.dump(meta, open(os.path.join(M, name + '.json'), 'w', encoding='utf-8'), indent=1)
     return meta
 
 
@@ -141,5 +141,5 @@ if not os.path.exists(os.path.join(M, 'wide.json')):
     print('wide best', ranked[:3])
     mosaic('wide', wide, 2048, ranked[:3])
 city['mapCredit'] = '卫星影像：NASA GIBS（HLS / VIIRS）'
-json.dump(city, open(os.path.join(CITY, 'city.json'), 'w'), ensure_ascii=False, indent=1)
+json.dump(city, open(os.path.join(CITY, 'city.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 print('map ok')

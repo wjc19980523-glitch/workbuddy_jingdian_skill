@@ -43,10 +43,10 @@ R = os.path.join(out, 'research')
 os.makedirs(R, exist_ok=True)
 
 cp = os.path.join(out, 'city.json')
-city = json.load(open(cp)) if os.path.exists(cp) else {}
+city = json.load(open(cp, encoding='utf-8')) if os.path.exists(cp) else {}
 city.update(slug=slug, name=short, en=en, center={'lon': round(float(g['lon']), 4), 'lat': round(float(g['lat']), 4)},
             adminBBox=[bb[2], bb[0], bb[3], bb[1]])
-json.dump(city, open(cp, 'w'), ensure_ascii=False, indent=1)
+json.dump(city, open(cp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
 sp = os.path.join(out, 'spots.json')
 if not os.path.exists(sp):
@@ -56,12 +56,12 @@ if not os.path.exists(sp):
         'subtitleFacts': [{'text': 'TODO 副标题依据', 'quotes': [{'file': 'TODO.txt', 'quote': 'TODO'}]}],
         'question': f'TODO 结尾唯一的问题，如：{short}这8个地方，\\n你最想先去哪一个？',
         'spots': [],
-    }, open(sp, 'w'), ensure_ascii=False, indent=1)
+    }, open(sp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
 # ---------------------------------------------------------------- research material
 W = os.path.join(HERE, 'wiki.py')
-subprocess.call([sys.executable, '-I', W, 'wp', R, short + '市'])
-subprocess.call([sys.executable, '-I', W, 'bk', R, short, short + '市'])
+subprocess.call([sys.executable, '-I', '-X', 'utf8', W, 'wp', R, short + '市'])
+subprocess.call([sys.executable, '-I', '-X', 'utf8', W, 'bk', R, short, short + '市'])
 for a, b in (('wp_' + short + '市.txt', 'wp_city.txt'),):
     pa = os.path.join(R, a)
     if os.path.exists(pa) and not os.path.exists(os.path.join(R, b)):
@@ -73,12 +73,12 @@ rows, seen = [], set()
 for fn in sorted(os.listdir(R)):
     if not fn.endswith('.txt') or fn in ('wp_city.txt',):
         continue
-    body = open(os.path.join(R, fn), errors='ignore').read().split('\n', 2)[-1]
+    body = open(os.path.join(R, fn), errors='ignore', encoding='utf-8').read().split('\n', 2)[-1]
     for sent in re.split(r'(?<=[。！；\n])', body):
         sent = sent.strip()
         if 10 <= len(sent) <= 200 and KEY.search(sent) and ('旅游' in sent or '景' in sent or '名胜' in sent) and sent not in seen:
             seen.add(sent); rows.append((fn, sent))
-with open(os.path.join(R, 'candidates.md'), 'w') as f:
+with open(os.path.join(R, 'candidates.md'), 'w', encoding='utf-8') as f:
     f.write(f'# {short} · 提到景点的句子（摘自 research/ 下的城市条目）\n\n')
     f.write('从这里挑 6–8 个景点；每个景点再用 wiki.py 下载它自己的维基百科条目 + 快懂百科词条，事实从那两个文件里原样摘引文。\n\n')
     for k, (fn, s) in enumerate(rows[:200], 1):

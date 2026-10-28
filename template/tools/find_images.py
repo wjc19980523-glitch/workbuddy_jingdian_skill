@@ -19,9 +19,9 @@ import commons  # noqa: E402
 from fetch_images import licence_ok, AI  # noqa: E402
 
 CITY = os.path.abspath(sys.argv[1])
-data = json.load(open(os.path.join(CITY, 'spots.json')))
+data = json.load(open(os.path.join(CITY, 'spots.json'), encoding='utf-8'))
 cp = os.path.join(CITY, 'research', 'image_candidates.json')
-cand = json.load(open(cp)) if os.path.exists(cp) else {}
+cand = json.load(open(cp, encoding='utf-8')) if os.path.exists(cp) else {}
 changed = set()
 OKMIME = ('image/jpeg', 'image/png', 'image/tiff')
 SKIP = re.compile(r'(map|地图|简介|introduction|sign|标志|指示|bus|logo|plan|diagram|ticket|门票|menu|\.pdf|\.djvu)', re.I)
@@ -75,8 +75,8 @@ for n in data['spots']:
         md.append(f"- **{x['code']}**  {x['title']}  | {shape} {x['w']}x{x['h']} | {x['license']} | 作者 {x['artist'] or '—'} | {x['date'] or '—'}\n  说明：{x['desc'] or '—'}")
     md.append('')
 if changed or not os.path.exists(cp):
-    json.dump(cand, open(cp, 'w'), ensure_ascii=False, indent=1)
-open(os.path.join(CITY, 'research', 'images.md'), 'w').write('\n'.join(md))
+    json.dump(cand, open(cp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+open(os.path.join(CITY, 'research', 'images.md'), 'w', encoding='utf-8').write('\n'.join(md))
 
 # contact sheets for a human (the model does not need them)
 try:
