@@ -16,12 +16,21 @@
 - `SKILL.md`：给 WorkBuddy（或其他执行模型）的完整用法
 - `run.sh`：唯一入口
 - `template/`：冻结模板（画面/运镜/工具脚本），执行模型不改这里
-- `examples/huzhou/`：湖州示例（成片约 56s，7 景）
-- `examples/hangzhou/`：杭州示例（WorkBuddy 验收填表）
+- `examples/huzhou/`、`examples/hangzhou/`：示例只保留 `spots.json` 与调研文本，**不含大图/成片**（安装包约几百 KB）
 - `REPORT.md`：湖州成片与待核对说明
 
-成片视频、渲染中间文件和 `node_modules` 不入库（见 `.gitignore`），本地运行时重新生成。
+照片、卫星图、成片视频、渲染中间文件和 `node_modules` 都不入库；运行 `./run.sh <城市>` 时由脚本重新下载与生成。
+
+## 安装说明（WorkBuddy）
+
+本仓库刻意做得很轻，方便国内网络安装。若你本地还残留上次装到一半的大文件目录，先删掉再重装：
+
+```text
+~/.workbuddy/skills/ 下对应的 jingdian / city-scenic 目录
+```
+
+然后重新从本仓库安装即可。
 
 ## 许可
 
-MIT，见 [LICENSE](LICENSE)。示例图片来自各自出处，见各城市的 `image-sources.md`。
+MIT，见 [LICENSE](LICENSE)。示例文案与调研文本仅作格式参考；图片授权以各城市本地生成的 `image-sources.md` 为准。
