@@ -1,0 +1,14 @@
+{
+ "w": 2048,
+ "h": 2058,
+ "lon0": 117.81340000000002,
+ "lon1": 122.2134,
+ "lat0": 28.843399999999995,
+ "lat1": 32.642344333059555,
+ "dates": [
+  "VIIRS_NOAA20_CorrectedReflectance_TrueColor 2026-01-11",
+  "VIIRS_NOAA20_CorrectedReflectance_TrueColor 2025-12-06",
+  "VIIRS_NOAA20_CorrectedReflectance_TrueColor 2025-11-27"
+ ],
+ "layer": "VIIRS_NOAA20_CorrectedReflectance_TrueColor"
+}

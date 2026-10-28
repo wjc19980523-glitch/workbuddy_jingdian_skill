@@ -1,0 +1,12 @@
+{
+ "w": 4096,
+ "h": 3573,
+ "lon0": 119.46680000000002,
+ "lon1": 120.56,
+ "lat0": 30.333499999999994,
+ "lat1": 31.15308725584541,
+ "dates": [
+  "HLS_S30_Nadir_BRDF_Adjusted_Reflectance 2026-01-07"
+ ],
+ "layer": "HLS_S30_Nadir_BRDF_Adjusted_Reflectance"
+}

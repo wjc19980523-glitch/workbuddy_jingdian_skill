@@ -1,0 +1,16 @@
+{
+ "slug": "hangzhou",
+ "name": "杭州",
+ "en": "Hangzhou City",
+ "center": {
+  "lon": 120.2052,
+  "lat": 30.249
+ },
+ "adminBBox": [
+  118.3396948,
+  29.1888286,
+  120.7254851,
+  30.5648514
+ ],
+ "mapCredit": "卫星影像：NASA GIBS（HLS / VIIRS）"
+}

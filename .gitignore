@@ -1,0 +1,11 @@
+node_modules/
+build/
+*.mp4
+*.mp4.bak*
+*.log
+__pycache__/
+*.pyc
+examples/*/build.lock
+workbuddy-test/workbuddy.log
+workbuddy-test/workbuddy.jsonl
+.DS_Store

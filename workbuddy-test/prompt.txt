@@ -1,0 +1,1 @@
+城市：杭州。使用 city-scenic skill（本目录的 SKILL.md）为杭州做景点视频，验收用 --draft。
