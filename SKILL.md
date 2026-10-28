@@ -50,7 +50,7 @@ python3 -I -X utf8 template/tools/wiki.py bk examples/<slug>/research 灵隐寺 
 
 ### 2.3 写 `examples/<slug>/spots.json`
 
-格式照抄 `template/spots.example.json`（湖州完整版：`examples/huzhou/spots.json`）。
+格式照抄 `template/spots.example.json`。
 
 顶层字段：
 
@@ -133,9 +133,9 @@ python3 -I -X utf8 template/tools/wiki.py bk examples/<slug>/research 灵隐寺 
 **正式版渲染约 30–60 分钟，试看版约 10 分钟。** 如果你的命令工具有时长上限，**一定要放后台**：
 
 ```bash
-nohup ./run.sh 杭州 > examples/hangzhou/run.log 2>&1 &
-tail -3 examples/hangzhou/run.log                     # 隔几分钟看一次
-ls examples/hangzhou/build/frames | wc -l             # 已渲染帧数（总帧数见 run.log 的 “render N frames total”）
+nohup ./run.sh 湖州 > examples/huzhou/run.log 2>&1 &
+tail -3 examples/huzhou/run.log                     # 隔几分钟看一次
+ls examples/huzhou/build/frames | wc -l             # 已渲染帧数（总帧数见 run.log 的 “render N frames total”）
 ```
 
 直到 `run.log` 最后一行出现 `RUN.SH EXIT 0`（成功）或其他退出码。中断后重跑会接着已渲染的帧继续；同一城市同时只会跑一个渲染（有锁）。
@@ -172,7 +172,6 @@ template/
   render.sh             时间线 → 配乐 → 出处清单 → 逐帧渲染 → mp4 → 封面 → 缩略图 → ffprobe
   tools/                init_city wiki check geocode find_images fetch_images fetch_map build_timeline music make_docs render stills commons
   spots.example.json    表格示例
-examples/huzhou/        湖州（完整示例：spots.json、research/、成片与清单）
 ```
 
 模板自动做的事：片头 7 张照片快闪 + “飞越X”逐字砸出 → 卫星图从长三角俯冲到城市、片名落下、景点定位点依次亮起、路线描出 → 俯冲进第一个景点；每个景点按照片情况分配一种运镜（环形开窗 ring / 仰拍升镜+塔中推进 tilt / 三段横条 bands / 全景横移 pano / 3D 旋转卡片 carousel / 竖条交错 strips / 水墨晕染变彩色 bloom），景点之间轮换 7 种转场（横甩、推进、竖甩、翻滚、圆形开窗、斜甩、闪切），中途一次地图“下一站”转场；结尾 3D 照片墙飞越 → 全城路线图 + 提问。配乐（120 BPM 原创合成）与所有剪辑点对齐。

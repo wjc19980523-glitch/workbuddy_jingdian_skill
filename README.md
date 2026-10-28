@@ -16,10 +16,10 @@
 - `SKILL.md`：给 WorkBuddy（或其他执行模型）的完整用法
 - `run.sh`：唯一入口
 - `template/`：冻结模板（画面/运镜/工具脚本），执行模型不改这里
-- `examples/huzhou/`、`examples/hangzhou/`：示例只保留 `spots.json` 与调研文本，**不含大图/成片**（安装包约几百 KB）
-- `REPORT.md`：湖州成片与待核对说明
+- `examples/`：运行时按城市自动生成（如 `examples/huzhou/`），仓库内不预置任何城市素材
+- `REPORT.md`：简要说明（历史验收记录已清空）
 
-照片、卫星图、成片视频、渲染中间文件和 `node_modules` 都不入库；运行 `./run.sh <城市>` 时由脚本重新下载与生成。
+照片、卫星图、成片视频、调研文本、`spots.json`、渲染中间文件和 `node_modules` 都不入库；运行 `./run.sh <城市>` 时由脚本重新下载与生成。
 
 ## 安装说明（WorkBuddy）
 
